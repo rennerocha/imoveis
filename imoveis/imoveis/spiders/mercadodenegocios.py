@@ -6,13 +6,13 @@ class MercadoDeNegociosSpider(scrapy.Spider):
 
     real_estate = None
     busca_url = None
+    available_types = ()
 
     def get_payload(self, property_type, skip=None):
         raise NotImplementedError
 
     def start_requests(self):
-        available_types = ["comprar", "alugar"]
-        for property_type in available_types:
+        for property_type in self.available_types:
             payload = self.get_payload(property_type)
             yield scrapy.http.JSONRequest(
                 self.busca_url,
@@ -49,6 +49,7 @@ class VillaImoveisCampinasSpider(MercadoDeNegociosSpider):
     allowed_domains = ["villaimoveiscampinas.com.br"]
     real_estate = "villaimoveiscampinas"
     busca_url = "https://villaimoveiscampinas.com.br/busca/Imoveis"
+    available_types = ["comprar", "alugar"]
 
     def get_payload(self, property_type, skip=0):
         return {
@@ -79,6 +80,7 @@ class GalanteImoveisSpider(MercadoDeNegociosSpider):
     allowed_domains = ["galanteimoveis.com.br"]
     real_estate = "galanteimoveis"
     busca_url = "https://galanteimoveis.com.br/busca/Imoveis"
+    available_types = ["comprar", "alugar"]
 
     def get_payload(self, property_type, skip=0):
         return {
@@ -98,3 +100,35 @@ class GalanteImoveisSpider(MercadoDeNegociosSpider):
             "limit": "10",
             "modo": False,
         }
+
+
+class StartImoveisSpider(MercadoDeNegociosSpider):
+    name = "startimoveis"
+    allowed_domains = ["startimoveis.com.br"]
+    real_estate = "startimoveis"
+    busca_url = "https://startimoveis.com.br/busca/Imoveis"
+    available_types = ["venda", "alugar"]
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "tipo": "",
+                "bairro": [],
+                "condominio": [],
+                "cidade": [],
+                "codigos": [],
+                "numeros": [None, "", "", ""],
+                "emcondominio": False,
+                "empermuta": False,
+                "valor": {"venda": {}, "alugar": {}},
+                "area": {},
+            },
+            "ordem": "recente",
+            "skip": skip,
+            "categoria": "",
+            "limit": 12,
+            "modo": False,
+        }
+
