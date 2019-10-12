@@ -20,7 +20,7 @@ class ProvectumSpider(scrapy.Spider):
         }
 
     def start_requests(self):
-        available_types = ["venda"]
+        available_types = ["locacao", "venda"]
         for property_type in available_types:
             payload = self.get_payload(property_type)
             yield scrapy.http.JSONRequest(
