@@ -132,3 +132,33 @@ class StartImoveisSpider(MercadoDeNegociosSpider):
             "modo": False,
         }
 
+
+class RumoImobiliariaSpider(MercadoDeNegociosSpider):
+    name = "rumoimobiliaria"
+    allowed_domains = ["rumoimobiliaria.com.br"]
+    real_estate = "rumoimobiliaria"
+    busca_url = "https://rumoimobiliaria.com.br/busca/Imoveis"
+    available_types = ["comprar", "alugar"]
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": 0,
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
+        }
