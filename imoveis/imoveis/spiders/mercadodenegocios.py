@@ -162,3 +162,34 @@ class RumoImobiliariaSpider(MercadoDeNegociosSpider):
             "limit": 8,
             "modo": "imoveis",
         }
+
+
+class PradoGoncalvesSpider(MercadoDeNegociosSpider):
+    name = "pradogoncalves"
+    allowed_domains = ["pradogoncalves.com.br"]
+    real_estate = "pradogoncalves"
+    busca_url = "https://pradogoncalves.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": "",
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
+        }
