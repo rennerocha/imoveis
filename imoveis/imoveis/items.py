@@ -1,14 +1,19 @@
-# -*- coding: utf-8 -*-
-
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class ImoveisItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class PropertyItem(scrapy.Item):
+    url = scrapy.Field()
+    code = scrapy.Field()
+    property_type = scrapy.Field()
+    city = scrapy.Field()
+    neighborhood = scrapy.Field()
+    latitude = scrapy.Field()
+    longitude = scrapy.Field()
+    rent_price = scrapy.Field()
+    sale_price = scrapy.Field()
+    built_area = scrapy.Field()
+    total_area = scrapy.Field()
+    real_estate = scrapy.Field()
+    for_rent = scrapy.Field()
+    for_sale = scrapy.Field()
+    date = scrapy.Field()

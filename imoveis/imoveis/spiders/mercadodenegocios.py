@@ -1,5 +1,9 @@
 import json
+from urllib.parse import urlparse
+
 import scrapy
+
+from imoveis.items import PropertyItem
 
 
 class MercadoDeNegociosSpider(scrapy.Spider):
@@ -10,6 +14,43 @@ class MercadoDeNegociosSpider(scrapy.Spider):
 
     def get_payload(self, property_type, skip=None):
         raise NotImplementedError
+
+    def result_to_item(self, result):
+        item = PropertyItem()
+
+        property_code = result["sigla"]
+        parsed_url = urlparse(self.busca_url)
+        property_url = (
+            f"{parsed_url.scheme}://{parsed_url.netloc}/imovel/{property_code}"
+        )
+        item["url"] = property_url
+        item["code"] = property_code
+        item["property_type"] = result["tipo"]
+
+        local = result.get("local", {})
+        item["city"] = local.get("cidade")
+        item["neighborhood"] = local.get("bairro")
+
+        coordinates = local.get("coordenadas", [])
+        if len(coordinates) == 2:
+            item["latitude"] = local["coordenadas"][0]
+            item["longitude"] = local["coordenadas"][1]
+
+        rent_info = result["comercializacao"].get("locacao", {})
+        item["for_rent"] = rent_info.get("ativa", False)
+        item["rent_price"] = rent_info.get("preco")
+
+        sale_info = result["comercializacao"].get("venda", {})
+        item["for_sale"] = sale_info.get("ativa", False)
+        item["sale_price"] = sale_info.get("preco")
+
+        numbers = result["numeros"]
+        item["built_area"] = numbers["areas"].get("construida")
+        item["total_area"] = numbers["areas"].get("total")
+
+        item["real_estate"] = self.real_estate
+
+        return item
 
     def start_requests(self):
         for property_type in self.available_types:
@@ -29,7 +70,7 @@ class MercadoDeNegociosSpider(scrapy.Spider):
             return
 
         for result in available_properties:
-            yield result
+            yield self.result_to_item(result)
 
         # Pagination
         skip = response.meta.get("skip", 0)
@@ -96,7 +137,7 @@ class GalanteImoveisSpider(MercadoDeNegociosSpider):
                 "emcondominio": False,
             },
             "ordem": "recente",
-            "skip": 0,
+            "skip": skip,
             "limit": "10",
             "modo": False,
         }
