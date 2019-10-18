@@ -63,7 +63,11 @@ class MercadoDeNegociosSpider(scrapy.Spider):
 
     def parse(self, response):
         results = json.loads(response.body_as_unicode())
-        available_properties = results.get("imoveis", [])
+
+        if isinstance(results, list):
+            available_properties = results
+        else:
+            available_properties = results.get("imoveis", [])
 
         num_results = len(available_properties)
         if num_results == 0:
@@ -233,4 +237,25 @@ class PradoGoncalvesSpider(MercadoDeNegociosSpider):
             "skip": skip,
             "limit": 8,
             "modo": "imoveis",
+        }
+
+
+class ProvectumImoveisSpider(MercadoDeNegociosSpider):
+    name = "provectumimoveis"
+    allowed_domains = ["provectumimoveis.com.br"]
+    real_estate = "provectumimoveis"
+    busca_url = "https://provectumimoveis.com.br/busca/Imoveis"
+    available_types = ("locacao", "venda")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": f'{{"comercializacao.{property_type}.ativa":true}}',
+            "modo": False,
+            "ordem": {
+                f"comercializacao.{property_type}.ativa": -1,
+                f"comercializacao.{property_type}.preco": -1,
+            },
+            "skip": skip,
+            "limit": 12,
+            "exclusivo": False,
         }
