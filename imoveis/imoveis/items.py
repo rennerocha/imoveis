@@ -3,8 +3,9 @@ import scrapy
 
 class PropertyItem(scrapy.Item):
     url = scrapy.Field()
-    code = scrapy.Field()
+    code = scrapy.Field("")
     property_type = scrapy.Field()
+    address = scrapy.Field()
     city = scrapy.Field()
     neighborhood = scrapy.Field()
     latitude = scrapy.Field()
@@ -17,3 +18,6 @@ class PropertyItem(scrapy.Item):
     for_rent = scrapy.Field()
     for_sale = scrapy.Field()
     date = scrapy.Field()
+    proposals = scrapy.Field()  # It exists ... not sure if I can trust it
+    properties = scrapy.Field()
+    rooms = scrapy.Field()

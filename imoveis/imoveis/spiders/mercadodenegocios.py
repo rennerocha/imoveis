@@ -28,8 +28,18 @@ class MercadoDeNegociosSpider(scrapy.Spider):
         item["property_type"] = result["tipo"]
 
         local = result.get("local", {})
-        item["city"] = local.get("cidade")
+
+        street = local.get("rua", "")
+        street_number = local.get("numero", "")
+        if street or street_number:
+            item["address"] = f"{street}, {street_number}"
+
+        item["city"] = local.get("cidade", local.get("cep_cidade"))
         item["neighborhood"] = local.get("bairro")
+        item["proposals"] = result.get("negociacao", {}).get("propostasAtivas")
+
+        properties = "|".join(result.get("recursos", {}).get("imovel", []))
+        item["properties"] = properties
 
         coordinates = local.get("coordenadas", [])
         if len(coordinates) == 2:
@@ -47,6 +57,7 @@ class MercadoDeNegociosSpider(scrapy.Spider):
         numbers = result["numeros"]
         item["built_area"] = numbers["areas"].get("construida")
         item["total_area"] = numbers["areas"].get("total")
+        item["rooms"] = numbers.get("dormitorios")
 
         item["real_estate"] = self.real_estate
 
