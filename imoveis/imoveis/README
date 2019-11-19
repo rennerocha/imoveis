@@ -1,0 +1,5 @@
+
+$ cd gui
+$ python -m SimpleHTTPServer 8000
+
+Access the map on http://127.0.0.1:8000

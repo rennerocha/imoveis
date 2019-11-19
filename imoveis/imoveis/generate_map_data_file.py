@@ -13,6 +13,7 @@ for result in properties:
                 "latitude": result.latitude,
                 "longitude": result.longitude,
                 "code": result.code,
+                "neighborhood": result.neighborhood,
                 "url": result.url,
                 "rent_price": result.rent_price,
             },
