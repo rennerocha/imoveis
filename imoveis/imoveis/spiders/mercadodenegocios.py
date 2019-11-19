@@ -1,4 +1,5 @@
 import json
+import os
 from urllib.parse import urlparse
 
 import scrapy
@@ -11,6 +12,21 @@ class MercadoDeNegociosSpider(scrapy.Spider):
     real_estate = None
     busca_url = None
     available_types = ()
+
+    custom_settings = {"FEED_URI": "name.csv"}
+
+    @classmethod
+    def update_settings(cls, settings):
+        current_settings = cls.custom_settings or {}
+        result_file = cls.name + ".csv"
+
+        current_dir = os.getcwd()
+        results_dir = f"{current_dir}/results/"
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
+
+        current_settings["FEED_URI"] = f"{results_dir}{result_file}"
+        settings.setdict(current_settings, priority="spider")
 
     def get_payload(self, property_type, skip=None):
         raise NotImplementedError
@@ -269,4 +285,280 @@ class ProvectumImoveisSpider(MercadoDeNegociosSpider):
             "skip": skip,
             "limit": 12,
             "exclusivo": False,
+        }
+
+
+class NovoMetroSpider(MercadoDeNegociosSpider):
+    name = "novometro"
+    allowed_domains = ["novometro.com.br"]
+    real_estate = "novometro"
+    busca_url = "https://novometro.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "modo": "imovel",
+                "comercializacao": property_type,
+                "tipo": [],
+                "categoria": "",
+                "finalidade": "",
+                "codigo": [],
+                "ruas": [],
+                "cidades": [],
+                "bairros": [],
+                "condominios": [],
+                "area": {"min": 0, "max": 0, "step": 50, "steps": [0, 10000]},
+                "recursos": {"imovel": {}, "condominio": {}},
+                "coordenadas": [
+                    [-22.577909971748927, -46.80011002441404],
+                    [-23.13092199253676, -47.34942643066404],
+                ],
+                "dormitorios": "",
+                "suites": "",
+                "vagas": "",
+                "banheiros": "",
+                "emCondominio": False,
+                "emPermuta": False,
+                "aceitaFinanciamento": False,
+                "_id": [],
+                "valor": {"min": 0, "max": 0, "step": 50, "steps": [0, 6000]},
+            },
+            "ordem": "",
+            "skip": skip,
+            "limit": 9,
+        }
+
+
+class ManhattanImoveisSpider(MercadoDeNegociosSpider):
+    name = "mhtimoveis"
+    allowed_domains = ["mhtimoveis.com.br"]
+    real_estate = "mhtimoveis"
+    busca_url = "https://mhtimoveis.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": 0,
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
+        }
+
+
+class DeLuccaImoveisSpider(MercadoDeNegociosSpider):
+    name = "deluccaimoveis"
+    allowed_domains = ["deluccaimoveis.com.br"]
+    real_estate = "deluccaimoveis"
+    busca_url = "https://deluccaimoveis.com.br/busca/Imoveis"
+    available_types = ("aluguel", "venda")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "condominios": [],
+                "tipo": [],
+                "bairro": [],
+                "condominio": [],
+                "cidade": [],
+                "codigos": [],
+                "numeros": [],
+                "emcondominio": False,
+            },
+            "ordem": True,
+            "skip": skip,
+            "limit": 16,
+            "modo": "imovel",
+        }
+
+
+class HMPoloSpider(MercadoDeNegociosSpider):
+    name = "hmpolo"
+    allowed_domains = ["hmpolo.com.br"]
+    real_estate = "hmpolo"
+    busca_url = "https://hmpolo.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "modo": "imovel",
+                "comercializacao": property_type,
+                "tipo": [],
+                "categoria": "",
+                "finalidade": "",
+                "codigo": [],
+                "ruas": [],
+                "cidades": [],
+                "bairros": [],
+                "condominios": [],
+                "area": {"min": 100, "max": 10000, "step": 50, "steps": [100, 10000]},
+                "recursos": {"imovel": {}, "condominio": {}},
+                "coordenadas": [],
+                "dormitorios": "",
+                "suites": "",
+                "vagas": "",
+                "banheiros": "",
+                "emCondominio": False,
+                "emPermuta": False,
+                "aceitaFinanciamento": False,
+                "_id": [],
+                "valor": {
+                    "min": 20000,
+                    "max": 1500000,
+                    "step": 5000,
+                    "steps": [20000, 1500000],
+                },
+            },
+            "ordem": "",
+            "skip": skip,
+            "limit": 9,
+        }
+
+
+class BonoEAmaralImoveisSpider(MercadoDeNegociosSpider):
+    name = "bononeamaralimoveis"
+    allowed_domains = ["bononeamaralimoveis.com.br"]
+    real_estate = "bononeamaralimoveis"
+    busca_url = "https://bononeamaralimoveis.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "modo": "imovel",
+                "comercializacao": property_type,
+                "tipo": [],
+                "categoria": "",
+                "finalidade": "",
+                "codigo": [],
+                "ruas": [],
+                "cidades": [],
+                "bairros": [],
+                "condominios": [],
+                "area": {"min": "", "max": "", "step": 50, "steps": [30, 2000]},
+                "recursos": {"imovel": {}, "condominio": {}},
+                "coordenadas": [],
+                "dormitorios": "",
+                "suites": "",
+                "vagas": "",
+                "banheiros": "",
+                "emCondominio": False,
+                "emPermuta": False,
+                "aceitaFinanciamento": False,
+                "_id": [],
+                "valor": {"min": "", "max": "", "step": 50, "steps": [400, 6000]},
+            },
+            "ordem": "",
+            "skip": skip,
+            "limit": 10,
+        }
+
+
+class HomeHuntersSpider(MercadoDeNegociosSpider):
+    name = "homehunters"
+    allowed_domains = ["homehunters.com.br"]
+    real_estate = "homehunters"
+    busca_url = "https://homehunters.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": 0,
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
+        }
+
+
+class ImobiliariaCidadeUniversitariaSpider(MercadoDeNegociosSpider):
+    name = "cidadeuniversitariaimoveis"
+    allowed_domains = ["cidadeuniversitariaimoveis.com.br"]
+    real_estate = "cidadeuniversitariaimoveis"
+    busca_url = "https://cidadeuniversitariaimoveis.com.br/busca/Imoveis"
+    available_types = ("comprar", "alugar")
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": 0,
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
+        }
+
+
+class CanovaImoveisSpider(MercadoDeNegociosSpider):
+    name = "canova"
+    allowed_domains = ["canova.com.br"]
+    real_estate = "canova"
+    busca_url = "https://canova.com.br/busca/Imoveis"
+    available_types = ["comprar", "alugar"]
+
+    def get_payload(self, property_type, skip=0):
+        return {
+            "busca": {
+                "comercializacao": property_type,
+                "categoria": "",
+                "condominio": [],
+                "tipo": [],
+                "bairro": [],
+                "cidade": [],
+                "finalidade": "",
+                "vagas": 0,
+                "dorms": 0,
+                "banheiros": 0,
+                "preco": "",
+                "emCondominio": False,
+                "corretor": False,
+            },
+            "ordem": "crescente",
+            "skip": skip,
+            "limit": 8,
+            "modo": "imoveis",
         }
